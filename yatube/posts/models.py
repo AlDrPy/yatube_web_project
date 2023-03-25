@@ -84,3 +84,45 @@ class Comment(models.Model):
         auto_now_add=True,
         verbose_name='Дата комментария'
     )
+
+    def __str__(self):
+        return (
+            f'Комментарий к посту с id {self.post.id}:'
+            f'{self.text[:LEN_OBJ_NAME]}'
+        )
+
+    class Meta:
+        ordering = ['-created']
+        verbose_name = 'Коммент'
+        verbose_name_plural = 'Комменты'
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Подписчик'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='Автор'
+    )
+
+    def __str__(self):
+        return (
+            f'Пользователь {self.user} подписан '
+            f'на автора {self.author}'
+        )
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_subscription'
+            )
+        ]

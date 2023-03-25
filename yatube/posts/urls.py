@@ -17,4 +17,15 @@ urlpatterns = [
         name='add_comment'
     ),
     path('create/', views.post_create, name='post_create'),
+    path('follow/', views.follow_index, name='follow_index'),
+    path(
+        'profile/<str:username>/follow/',
+        views.profile_follow,
+        name='profile_follow'
+    ),
+    path(
+        'profile/<str:username>/unfollow/',
+        views.profile_unfollow,
+        name='profile_unfollow'
+    ),
 ]
