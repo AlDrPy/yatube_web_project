@@ -38,9 +38,10 @@ def profile(request, username):
     this_user = User.objects.get(username=username)
     post_list = Post.objects.select_related('author').filter(author=this_user)
     page_obj = add_paginator(request, post_list, NUMBER_OF_POSTS)
-    following = Follow.objects.filter(
+    following = request.user.is_authenticated and Follow.objects.filter(
         author=this_user,
-        user=request.user).exists()
+        user=request.user
+    ).exists()
     context = {
         'this_user': this_user,
         'page_obj': page_obj,

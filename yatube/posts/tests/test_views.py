@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.cache import cache
 
-from posts.models import Post, Group
+from posts.models import Post, Group, Follow
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -274,3 +274,80 @@ class CachePagesTests(TestCase):
         cache.clear()
         response3 = self.client.get(reverse('posts:index'))
         self.assertNotEqual(response1.content, response3.content)
+
+
+class FollowTests(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user_follower = User.objects.create_user(username='YourFan')
+        cls.user_notfollower = User.objects.create_user(username='NotYourFan')
+        cls.author = User.objects.create_user(username='Author')
+        cls.author2 = User.objects.create_user(username='Author2')
+        cls.post = Post.objects.create(
+            author=cls.author,
+            text='Пост автора',
+        )
+        cls.post2 = Post.objects.create(
+            author=cls.author2,
+            text='Пост автора 2',
+        )
+        cls.follow = Follow.objects.create(
+            user=cls.user_follower,
+            author=cls.author,
+        )
+
+    def setUp(self):
+        self.authorized_flw_client = Client()
+        self.authorized_flw_client.force_login(FollowTests.user_follower)
+        self.authorized_notflw_client = Client()
+        self.authorized_notflw_client.force_login(FollowTests.user_notfollower)
+
+    def test_follow_view(self):
+        '''Тестирование функции подписки на автора.'''
+        follow_count = Follow.objects.count()
+        response = self.authorized_notflw_client.get(
+            reverse(
+                'posts:profile_follow',
+                kwargs={'username': self.author.username}
+            )
+        )
+        self.assertEqual(Follow.objects.count(), follow_count + 1)
+        self.assertRedirects(
+            response,
+            reverse('posts:profile', kwargs={'username': self.author.username})
+        )
+
+    def test_unfollow_view(self):
+        '''Тестирование функции отписки от автора.'''
+        follow_count = Follow.objects.count()
+        response = self.authorized_flw_client.get(
+            reverse(
+                'posts:profile_unfollow',
+                kwargs={'username': self.author.username}
+            )
+        )
+        self.assertEqual(Follow.objects.count(), follow_count - 1)
+        self.assertRedirects(
+            response,
+            reverse('posts:profile', kwargs={'username': self.author.username})
+        )
+
+    def test_followers_see_only_their_author_posts(self):
+        '''Посты авторов попадают только к подписчикам.'''
+        response_flw = self.authorized_flw_client.get(
+            reverse('posts:follow_index'))
+        follower_posts = response_flw.context['page_obj']
+
+        response_notflw = self.authorized_notflw_client.get(
+            reverse('posts:follow_index'))
+        non_follower_posts = response_notflw.context['page_obj']
+        # Простые юзеры не получают избранных постов
+        self.assertEqual(len(non_follower_posts), 0)
+        # Посты автора попадают к подписчикам
+        author_post = Post.objects.get(author=self.author)
+        self.assertIn(author_post, follower_posts)
+        # Посты других авторов не попадают к подписчикам
+        author2_post = Post.objects.get(author=self.author2)
+        self.assertNotIn(author2_post, follower_posts)
