@@ -145,3 +145,9 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+# Длина названия объектов в методе __str__
+LEN_OBJ_NAME = 15
+
+# Число постов на страницах проекта
+NUMBER_OF_POSTS = 10

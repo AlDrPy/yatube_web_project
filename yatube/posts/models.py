@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from yatube.settings import LEN_OBJ_NAME
 
 User = get_user_model()
-LEN_OBJ_NAME = 15
 
 
 class Group(models.Model):
