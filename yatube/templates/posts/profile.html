@@ -1,23 +1,23 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load thumbnail %}
-{% block title %} {{user.get_full_name }} Профайл пользователя {% endblock %}
+{% block title %} {{author.get_full_name }} Профайл пользователя {% endblock %}
 {% block content %}
     <div class="container py-5"> 
       <div class="mb-5">       
-        <h1>Все посты пользователя {{user.get_full_name}} </h1>
-        <h3>Всего постов: {{ user.posts.count }} </h3>   
+        <h1>Все посты пользователя {{author.get_full_name}} </h1>
+        <h3>Всего постов: {{ author.posts.count }} </h3>   
         {% if following %}
           <a
             class="btn btn-lg btn-light"
-            href="{% url 'posts:profile_unfollow' user.username %}" role="button"
+            href="{% url 'posts:profile_unfollow' author.username %}" role="button"
           >
             Отписаться
           </a>
         {% else %}
             <a
               class="btn btn-lg btn-primary"
-              href="{% url 'posts:profile_follow' user.username %}" role="button"
+              href="{% url 'posts:profile_follow' author.username %}" role="button"
             >
               Подписаться
             </a>
@@ -27,8 +27,8 @@
         <article>
             <ul>
                 <li>
-                  Автор: {{user}}
-                  <a href="{% url 'posts:profile' user %}">все посты пользователя</a>
+                  Автор: {{author}}
+                  <a href="{% url 'posts:profile' author %}">все посты пользователя</a>
                 </li>
                 <li>
                   Дата публикации: {{ post.pub_date }}
