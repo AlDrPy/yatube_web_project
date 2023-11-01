@@ -1,3 +1,19 @@
-# hw05_final
-
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+# Yatube project
+### Описание
+Это проект социальной сети для блогеров, реализованный на фреймворке Django.
+### Технологии
+Python 3.7
+Django 2.2.19
+### Запуск проекта в dev-режиме
+- Установите и активируйте виртуальное окружение
+- Установите зависимости из файла requirements.txt
+```
+pip install -r requirements.txt
+``` 
+- В папке с файлом manage.py выполните команду:
+```
+python3 manage.py runserver
+```
+После выполнения этих действий запустится сервер разработки на локальной машине по адресу 127.0.0.1:8000, где можно проверить работоспособность проекта.
+### Авторы
+_AlDrPy, команда ЯП (идейные вдохновители)._
